@@ -1,4 +1,4 @@
-import MySQLConnect
+from mysqlorm.MySQLConnect import MySQLConnect
 
 
 class ResaultBuilder(object):
@@ -14,7 +14,7 @@ class ResaultBuilder(object):
         """ query """
         resault = MySQLConnect.execute(builder.BuildQuerySQLString())
 
-        if not len(resault):
+        if not resault:
             return [] if few else None
 
         if few:

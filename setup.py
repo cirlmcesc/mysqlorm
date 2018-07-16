@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup, find_packages
 from os import path
 from io import open
@@ -8,8 +9,10 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+install_requires = ['pymysql',] if sys.version_info[0] == 3 else ['MySQLdb',]
+
 setup(
-    name = 'MysqlORM',
+    name = 'mysqlorm',
     version = '0.1',
     description = 'A simple ORM MySQL operation Library, running on Python3.',
     long_description = long_description,
@@ -37,7 +40,7 @@ setup(
     ],
     keywords = 'mysql orm',
     packages = find_packages(),
-    install_requires = ['pymysql',],
+    install_requires = install_requires,
     extras_require={
         'dev': [],
         'test': [],

@@ -2,9 +2,9 @@
 
 import random
 import time
-import MySQLConnect
-import QueryBuilder
-import ResaultBuilder
+from mysqlorm.MySQLConnect import MySQLConnect
+from mysqlorm.QueryBuilder import QueryBuilder
+from mysqlorm.ResaultBuilder import ResaultBuilder
 
 
 class ORMModel(object):
@@ -66,7 +66,7 @@ class ORMModel(object):
     @classmethod
     def all(cls):
         """ get all data """
-        return ResaultBuilder.query(QueryBuilder(cls))
+        return QueryBuilder(cls).get()
 
     @classmethod
     def first(cls):
@@ -94,10 +94,18 @@ class ORMModel(object):
                 builddata(instance) for instance in data
             ]
 
+        def BuildFieldsString(fields):
+            fields = tuple(fields)
+
+            if len(fields) == 1:
+                return "(%s)" % fields[0]
+            else:
+                tuple(fields).__str__().replace("'", '')
+
         fields = data.keys() if isinstance(data, dict) else random.choice(data).keys()
         sql = "INSERT INTO %s %s VALUES %s" % (
             cls.table_name,
-            tuple(fields).__str__().replace("'", ''),
+            BuildFieldsString(fields),
             "(%s)" % ", ".join(["%s" for index in range(len(fields))]))
 
         return MySQLConnect.execute(

@@ -1,4 +1,5 @@
-import ResaultBuilder
+from mysqlorm.ResaultBuilder import ResaultBuilder
+from mysqlorm.MySQLConnect import MySQLConnect
 
 
 class QueryBuilder(object):
@@ -36,7 +37,7 @@ class QueryBuilder(object):
 
         return sql + "".join(
             map(lambda condition: self._buildConditionString(condition), [
-                "_join", "_where", "_order", "_limit", "_group"
+                "_join", "_where", "_group", "_order", "_limit"
             ]))
 
     def _buildConditionString(self, condition):
@@ -54,8 +55,8 @@ class QueryBuilder(object):
         joinstring = ", " if condition == "_order" or condition == "_group" else " "
         startstring =  " " if condition == "join" else transConditionString()
 
-        if isinstance(content, str):
-            return content
+        if isinstance(content, str) and len(content):
+            return startstring + content
 
         return (startstring + joinstring.join(content)) if len(content) else ""
 
@@ -138,8 +139,8 @@ class QueryBuilder(object):
 
     def limit(self, offset, *args):
         """ limit """
-        offset = 0 if not len(args) else offset
         number = offset if not len(args) else args[0]
+        offset = 0 if not len(args) else offset
         self._limit = "%d, %d" % (offset, number)
 
         return self
