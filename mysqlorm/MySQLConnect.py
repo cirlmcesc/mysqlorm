@@ -1,12 +1,26 @@
-import pymysql as MySQLdb
+""" mysqldb connect package mysqlorm """
+""" mysql connect operation library  """
+
 import time
+import pymysql as MySQLdb
 
 
 class MySQLConnect(object):
-    """ MySQL connect"""
+    """
+    MySQL connect, set db connect, example:
+    db_config = {
+        "host": "localhost",
+        "user": "user",
+        "passwd": "passwd",
+        "db": "schema",
+    }
+    MySQLConnect.connect(db_config)
+    """
 
+    mysql_connect_count = 0
     mysql_connect_config = {}
     sql_statement_log = []
+    last_executed = ""
     db_connect = {}
     db = {}
 
@@ -20,47 +34,51 @@ class MySQLConnect(object):
 
     @classmethod
     def connect(cls, db_config={}):
-        """ set db connect, example:
-            db_config = {
-                "host": "127.0.0.1",
-                "user": "root",
-                "passwd": "",
-                "db": "schema",
-                "charset": "utf-8"
-            }
-        """
-
+        """ connect """
         if len(db_config):
+            db_config['cursorclass'] = MySQLdb.cursors.DictCursor
             cls.mysql_connect_config = db_config
 
         cls.db_connect = MySQLdb.connect(**cls.mysql_connect_config)
         cls.db = cls.db_connect.cursor()
+        cls.mysql_connect_count += 1
 
     @classmethod
-    def execute(cls, sql, parameter=(), many=False):
-        """ execute sql """
+    def __dbexecute(cls, sql, parameter, many):
+        """ db execute """
+        if many:
+            cls.db.executemany(sql, parameter)
+        else:
+            cls.db.execute(sql, parameter)
 
-        try:
-            cls.db_connect.ping()
-        except:
-            cls.connect()
-
-        cls.sql_statement_log.append({time.time(): sql})
-
-        try:
-            if many:
-                cls.db.executemany(sql, parameter)
-            else:
-                cls.db.execute(sql, parameter)
-
-            if sql.upper().replace(" ", "").startswith("SELECT"):
-                return cls.db.fetchall()
-        except:
-            print(cls.db._last_executed)
+    @classmethod
+    def __fetch(cls, sql, few):
+        """ fetch all """
+        if sql.upper().replace(" ", "").startswith("SELECT"):
+            return cls.db.fetchall() if few else cls.db.fetchone()
 
         return cls.db_connect.commit()
 
     @classmethod
-    def log(cls):
-        """ sql execute log"""
-        return cls.sql_statement_log
+    def __check_connect(cls):
+        """ check connect """
+        try:
+            cls.db_connect.ping()
+        except:
+            cls.connect()
+            time.sleep(10)
+            cls.__check_connect()
+
+    @classmethod
+    def execute(cls, sql, parameter=(), many=False, few=True):
+        """ execute sql """
+        cls.__check_connect()
+        cls.__dbexecute(sql, parameter, many)
+        cls.sql_statement_log.append({time.time(): sql})
+
+        return cls.__fetch(sql, few)
+
+    @classmethod
+    def rollback(cls):
+        """ mysql rollback """
+        return cls.db_connect.rollback()

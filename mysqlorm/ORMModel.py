@@ -1,14 +1,13 @@
-""" mysqldb connect package MysqlORM """
+""" mysqldb connect package mysqlorm """
+""" mysql orm model                  """
 
-import random
-import time
 from mysqlorm.MySQLConnect import MySQLConnect
 from mysqlorm.QueryBuilder import QueryBuilder
 from mysqlorm.ResaultBuilder import ResaultBuilder
 
 
 class ORMModel(object):
-    """ Model """
+    """ ORM Model """
 
     no_attribute = (
         "fields", "table_name", "_ORMModel__id", "origin_attributes", "origin_id")
@@ -56,7 +55,7 @@ class ORMModel(object):
         try:
             return new_instance.__getattribute__(attr)
         except AttributeError:
-            return ""
+            return None
 
     @classmethod
     def get(cls):
@@ -80,36 +79,8 @@ class ORMModel(object):
 
     @classmethod
     def insert(cls, data):
-        """ attribute insert to table"""
-        if (not isinstance(data, list) and
-            not isinstance(data, dict)) or not len(data):
-            raise AttributeError("data type error.")
-
-        def BuildInsertValueParam():
-            """ build param """
-            def builddata(value):
-                return tuple([value.get(field, '') for field in value])
-
-            return builddata(data) if isinstance(data, dict) else [
-                builddata(instance) for instance in data
-            ]
-
-        def BuildFieldsString(fields):
-            fields = tuple(fields)
-
-            if len(fields) == 1:
-                return "(%s)" % fields[0]
-            else:
-                tuple(fields).__str__().replace("'", '')
-
-        fields = data.keys() if isinstance(data, dict) else random.choice(data).keys()
-        sql = "INSERT INTO %s %s VALUES %s" % (
-            cls.table_name,
-            BuildFieldsString(fields),
-            "(%s)" % ", ".join(["%s" for index in range(len(fields))]))
-
-        return MySQLConnect.execute(
-            sql, parameter=BuildInsertValueParam(), many=isinstance(data, list))
+        """ insert data """
+        return QueryBuilder(cls).insert(data)
 
     @classmethod
     def find(cls, data_id):
@@ -136,17 +107,7 @@ class ORMModel(object):
         """ execute sql string """
         return MySQLConnect.execute(sql)
 
-    @staticmethod
-    def DB():
-        """ get MySQLConnect.db """
-        return MySQLConnect.getDB()
-
-    @staticmethod
-    def log():
-        """ get MySQLConnect.sql_statement_log """
-        return MySQLConnect.sql_statement_log
-
-    def arrangeAttributes(self):
+    def _arrangeAttributes(self):
         """ arrange self attribute """
         attributes = dict().fromkeys(self.fields)
 
@@ -158,7 +119,7 @@ class ORMModel(object):
 
     def save(self):
         """ update model attribute change """
-        attributes = self.arrangeAttributes()
+        attributes = self._arrangeAttributes()
 
         if len(self.origin_attributes):
             QueryBuilder(self).where("id", self.origin_id).update(attributes)

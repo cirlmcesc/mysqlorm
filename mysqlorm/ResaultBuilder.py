@@ -1,3 +1,6 @@
+""" mysqldb connect package mysqlorm """
+""" mysql resault builder            """
+
 from mysqlorm.MySQLConnect import MySQLConnect
 
 
@@ -12,16 +15,13 @@ class ResaultBuilder(object):
     @classmethod
     def query(cls, builder, few=True):
         """ query """
-        resault = MySQLConnect.execute(builder.BuildQuerySQLString())
+        resault = MySQLConnect.execute(builder.BuildQuerySQLString(), few=few)
 
         if not resault:
-            return [] if few else None
+            return () if few else None
 
-        if few:
-            return list(map(
-                lambda attributes:cls.buildORMModelInstance(builder._ormmodel, attributes), resault))
-        else:
-            return cls.buildORMModelInstance(builder._ormmodel, resault[0])
+        return tuple(map(lambda attributes: cls.buildORMModelInstance(builder._ormmodel, attributes), resault)) \
+            if few else cls.buildORMModelInstance(builder._ormmodel, resault)
 
     @classmethod
     def buildORMModelInstance(cls, model, attributes):

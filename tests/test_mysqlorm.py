@@ -1,5 +1,5 @@
-import os, sys, random
-sys.path.append('/Users/cirlmcescma/www/python/mysqlorm')
+import os, random
+import sys; sys.path.append('/Users/cirlmcescma/www/python/mysqlorm')
 from mysqlorm import ORMModel, MySQLConnect
 
 
@@ -27,7 +27,7 @@ def test_query():
     TestModel.get()
     TestModel.first()
     TestModel.find(random.choice(range(1, len(TestModel.get()))))
-    TestModel.where('test', 'like', 'test').orderBy('id').limit(11).get()
+    TestModel.where('id', ">", 1).where('test', 'like', 'test').orderBy('id').limit(11).get()
 
 def test_update():
     TestModel.update({"test": "batch update"})
@@ -43,7 +43,9 @@ def test_delete():
 
 if __name__ == "__main__":
     test_connect()
-    test_insert()
-    test_query()
+    # test_insert()
+    # test_query()
     test_update()
-    test_delete()
+    # test_delete()
+    print(MySQLConnect.sql_statement_log)
+
