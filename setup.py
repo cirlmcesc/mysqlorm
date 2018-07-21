@@ -13,7 +13,7 @@ install_requires = ['pymysql',] if sys.version_info[0] == 3 else ['MySQLdb',]
 
 setup(
     name = 'mysqlorm',
-    version = '0.1',
+    version = '0.2',
     description = 'A simple ORM MySQL operation Library, running on Python3.',
     long_description = long_description,
     long_description_content_type='text/markdown',
