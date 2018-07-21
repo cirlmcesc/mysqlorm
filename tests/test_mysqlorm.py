@@ -43,9 +43,9 @@ def test_delete():
 
 if __name__ == "__main__":
     test_connect()
-    # test_insert()
-    # test_query()
+    test_insert()
+    test_query()
     test_update()
-    # test_delete()
+    test_delete()
     print(MySQLConnect.sql_statement_log)
 

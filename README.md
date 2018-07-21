@@ -32,14 +32,14 @@ mysql_connect_config = {
 }
 MySQLConnect.connect(mysql_connect_config)
 ```
-<br/>
+
 Create a class to inherit ormmodel and set `table_name` attribute:
 (If no `table_name` attribute is set, use the lowercase class name by default.)
 ```python
 class ExampleModel(ORMModel):
     table_name = "exampletable"
 ```
-<br/>
+
 Insert:
 ```python
 ExampleModel.insert({"field1": "value1", "field2", "value2"}) # single insert
@@ -47,7 +47,7 @@ ExampleModel.insert(( # batch insert, can use tuple or list
     {"field1": "value1", "field2", "value2"}, 
     {"field1": "value1", "field2", "value2"}))
 ```
-<br/>
+
 Where:
 ```python
 # Support call chaining.
@@ -80,7 +80,7 @@ ExampleModel.whereBetween("field", "from_condition", "to_condition"
 # You can use `whereNull` and `whereNotNull`.
 ExampleModel.whereNull("field1").whereNotNull("field2")
 ```
-<br/>
+
 Query:
 ```python
 # You can use `select` method to defining query fields.
@@ -115,20 +115,20 @@ query.find(1) # to find data from id
 query.get() # to get data what query according to conditions
 query.first() # to get first raw data what query according to conditions
 ```
-<br/>
+
 Update:
 ```python
 # The `update` method supports the `where` conditions.
 ExampleModel.update({"field1": "value1", "field2", "value2"}) # batch update
 ExampleModel.where("field", "value").update({"field1": "value1"})
 ```
-<br/>
+
 Delete:
 ```python
 # The `delete` method supports the `where` conditions.
 ExampleModel.where("field", "value").delete()
 ```
-<br/>
+
 ORMModel:
 ```python
 # ORMModel instances can be operated on a variety of operations.
