@@ -123,7 +123,7 @@ How to use
     Or can not use `select` method.
 
     ```python
-    query = ExampleModel.select("field1", "field2", "field3")# n field parameters can be passed in.
+    query = ExampleModel.select("field1", "field2", "field3") # n field parameters can be passed in.
     ```
 
     All queries support the `where` method conditional queries.
@@ -178,16 +178,18 @@ How to use
 
 * Update:
 
+    The `update` method supports the `where` conditions.
+
     ```python
-    # The `update` method supports the `where` conditions.
     ExampleModel.update({"field1": "value1", "field2", "value2"}) # batch update
     ExampleModel.where("field", "value").update({"field1": "value1"})
     ```
 
 * Delete:
 
+    The `delete` method supports the `where` conditions.
+
     ```python
-    # The `delete` method supports the `where` conditions.
     ExampleModel.where("field", "value").delete()
     ```
 
